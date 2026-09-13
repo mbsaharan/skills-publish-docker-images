@@ -28,7 +28,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/my-test-image
+          images: ghcr.io/${{ github.repository_owner }}/my-test-image-v2
 
       # Step 3: Pull a tiny, ready-to-use public image
       - name: Pull sample Docker image
