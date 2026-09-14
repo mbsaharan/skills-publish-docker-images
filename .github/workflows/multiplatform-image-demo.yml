@@ -1,4 +1,4 @@
-name: GH-200 Docker Actions Demo
+name: Multiplatform Image Demo
 
 on:
   push:
