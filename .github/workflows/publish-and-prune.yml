@@ -33,7 +33,7 @@ jobs:
           package-name: 'demo-image'
           package-type: 'container'
           min-versions-to-keep: 2
-          num-old-versions-to-delete: 10
           delete-only-untagged-versions: false
           delete-only-pre-release-versions: false
           ignore-versions: ^$
+          token: ${{ secrets.GITHUB_TOKEN }}
