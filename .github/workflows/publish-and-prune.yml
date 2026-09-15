@@ -7,34 +7,29 @@ jobs:
   publish-and-prune:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout repo
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           registry-url: 'https://npm.pkg.github.com'
 
-      # Step 3: Create a dummy package.json with a new version
       - name: Create dummy package
         run: |
           echo '{
-            "name": "@${{ github.repository_owner }}/demo-package",
+            "name": "@${{ github.repository }}/demo-package",
             "version": "0.0.${{ github.run_number }}",
             "main": "index.js"
           }' > package.json
-          echo 'console.log("Hello from demo package v${{ github.run_number }}");' > index.js
+          echo 'console.log("Hello demo v${{ github.run_number }}");' > index.js
 
-      # Step 4: Publish new package version
       - name: Publish package
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 5: Prune old versions, keeping only the latest 3
       - name: Prune old versions
         uses: actions/delete-package-versions@v4
         with:
