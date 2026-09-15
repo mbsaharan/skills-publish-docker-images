@@ -1,0 +1,39 @@
+name: Publish and Prune Packages
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  publish-and-cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 1: Publish your new package version (Example using Node.js)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+
+      - name: Publish Package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 2: Automatically prune older versions
+      - name: Delete Old Package Versions
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'my-app'
+          package-type: 'npm'
+          min-versions-to-keep: 3
