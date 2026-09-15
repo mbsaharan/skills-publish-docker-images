@@ -1,10 +1,10 @@
-name: Publish and prune package
+name: Demo publish and prune
 
 on:
   workflow_dispatch:
 
 jobs:
-  publish-and-prune:
+  demo:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,7 +19,7 @@ jobs:
       - name: Create dummy package
         run: |
           echo '{
-            "name": "@${{ github.repository }}/demo-package",
+            "name": "@${{ github.repository_owner }}/demo-package",
             "version": "0.0.${{ github.run_number }}",
             "main": "index.js"
           }' > package.json
@@ -35,4 +35,4 @@ jobs:
         with:
           package-name: demo-package
           package-type: npm
-          min-versions-to-keep: 3
+          min-versions-to-keep: 2
