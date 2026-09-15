@@ -1,4 +1,4 @@
-name: Publish and Prune Docker Image
+name: Demo Docker publish and prune
 
 on:
   workflow_dispatch:
@@ -6,14 +6,11 @@ on:
 jobs:
   build-and-prune:
     runs-on: ubuntu-latest
-
-    # Important: allow pushing images and deleting package versions
     permissions:
       contents: read
       packages: write
 
     steps:
-      # Step 1: Log in to GHCR with GITHUB_TOKEN
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -21,22 +18,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 2: Pull a tiny base image (Alpine)
-      - name: Pull sample Docker image
+      - name: Pull Alpine
         run: docker pull alpine:latest
 
-      # Step 3: Tag it with a unique version (run number)
-      - name: Tag image for GHCR
+      - name: Tag image
         run: docker tag alpine:latest ghcr.io/${{ github.repository_owner }}/demo-image:${{ github.run_number }}
 
-      # Step 4: Push the image to GHCR
-      - name: Push image to GHCR
+      - name: Push image
         run: docker push ghcr.io/${{ github.repository_owner }}/demo-image:${{ github.run_number }}
 
-      # Step 5: Prune old versions, keep only the latest 2
-      - name: Prune old Docker images
+      - name: Prune old versions
         uses: actions/delete-package-versions@v4
         with:
-          package-name: demo-image
+          package-name: demo-image   # <-- no run number here
           package-type: docker
           min-versions-to-keep: 2
