@@ -1,38 +1,42 @@
-name: Demo publish and prune
+name: Publish and Prune Docker Image
 
 on:
   workflow_dispatch:
 
 jobs:
-  demo:
+  build-and-prune:
     runs-on: ubuntu-latest
+
+    # Important: allow pushing images and deleting package versions
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # Step 1: Log in to GHCR with GITHUB_TOKEN
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          node-version: '18'
-          registry-url: 'https://npm.pkg.github.com'
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create dummy package
-        run: |
-          echo '{
-            "name": "@${{ github.repository_owner }}/demo-package",
-            "version": "0.0.${{ github.run_number }}",
-            "main": "index.js"
-          }' > package.json
-          echo 'console.log("Hello demo v${{ github.run_number }}");' > index.js
+      # Step 2: Pull a tiny base image (Alpine)
+      - name: Pull sample Docker image
+        run: docker pull alpine:latest
 
-      - name: Publish package
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Step 3: Tag it with a unique version (run number)
+      - name: Tag image for GHCR
+        run: docker tag alpine:latest ghcr.io/${{ github.repository_owner }}/demo-image:${{ github.run_number }}
 
-      - name: Prune old versions
+      # Step 4: Push the image to GHCR
+      - name: Push image to GHCR
+        run: docker push ghcr.io/${{ github.repository_owner }}/demo-image:${{ github.run_number }}
+
+      # Step 5: Prune old versions, keep only the latest 2
+      - name: Prune old Docker images
         uses: actions/delete-package-versions@v4
         with:
-          package-name: demo-package
-          package-type: npm
+          package-name: demo-image
+          package-type: docker
           min-versions-to-keep: 2
