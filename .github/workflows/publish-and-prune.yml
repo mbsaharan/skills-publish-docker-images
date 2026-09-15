@@ -27,9 +27,10 @@ jobs:
       - name: Push image
         run: docker push ghcr.io/${{ github.repository_owner }}/demo-image:${{ github.run_number }}
 
-      - name: Prune old versions
+      - name: Prune old Docker images
         uses: actions/delete-package-versions@v4
         with:
-          package-name: demo-image   # <-- no run number here
-          package-type: docker
+          # Must match the package name exactly as shown in GHCR
+          package-name: demo-image
+          package-type: container
           min-versions-to-keep: 2
