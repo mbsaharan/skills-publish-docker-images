@@ -1,39 +1,43 @@
-name: Publish and Prune Packages
+name: Publish and prune package
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 jobs:
-  publish-and-cleanup:
+  publish-and-prune:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
     steps:
-      - name: Checkout Code
+      # Step 1: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # Step 1: Publish your new package version (Example using Node.js)
-      - name: Set up Node.js
+      # Step 2: Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '18'
           registry-url: 'https://npm.pkg.github.com'
 
-      - name: Publish Package
+      # Step 3: Create a dummy package.json with a new version
+      - name: Create dummy package
+        run: |
+          echo '{
+            "name": "@${{ github.repository_owner }}/demo-package",
+            "version": "0.0.${{ github.run_number }}",
+            "main": "index.js"
+          }' > package.json
+          echo 'console.log("Hello from demo package v${{ github.run_number }}");' > index.js
+
+      # Step 4: Publish new package version
+      - name: Publish package
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 2: Automatically prune older versions
-      - name: Delete Old Package Versions
-        uses: actions/delete-package-versions@v5
+      # Step 5: Prune old versions, keeping only the latest 3
+      - name: Prune old versions
+        uses: actions/delete-package-versions@v4
         with:
-          package-name: 'my-app'
-          package-type: 'npm'
+          package-name: demo-package
+          package-type: npm
           min-versions-to-keep: 3
