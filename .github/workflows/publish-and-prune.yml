@@ -13,6 +13,6 @@ jobs:
       - name: Delete old container versions
         uses: actions/delete-package-versions@v5
         with:
-          package-name: alpine-image
+          package-name: mbsaharan/alpine-image
           package-type: container
           min-versions-to-keep: 2
