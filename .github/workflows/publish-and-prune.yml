@@ -22,15 +22,15 @@ jobs:
         run: docker pull alpine:latest
 
       - name: Tag image
-        run: docker tag alpine:latest ghcr.io/${{ github.repository_owner }}/alpine-image
+        run: docker tag alpine:latest ghcr.io/${{ github.repository_owner }}/alpine-image:${{ github.run_number }}
 
       - name: Push image
-        run: docker push ghcr.io/${{ github.repository_owner }}/alpine-image
+        run: docker push ghcr.io/${{ github.repository_owner }}/alpine-image:${{ github.run_number }}
 
       - name: Prune old Docker images
         uses: actions/delete-package-versions@v5
         with:
           # Must match the package name exactly as shown in GHCR
-          package-name: demo-image
+          package-name: alpine-image
           package-type: container
           min-versions-to-keep: 2
