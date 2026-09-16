@@ -14,5 +14,5 @@ jobs:
           package-name: alpine-image
           package-type: container
           min-versions-to-keep: 2
-          delete-only-untagged-versions: false
+          delete-only-untagged-versions: true
           token: ${{ secrets.PACKAGES_PAT }}
