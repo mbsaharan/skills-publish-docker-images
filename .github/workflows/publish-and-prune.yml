@@ -31,6 +31,6 @@ jobs:
         uses: actions/delete-package-versions@v5
         with:
           # Must match the package name exactly as shown in GHCR
-          package-name: alpine-image
+          package-name: alpine-image:41
           package-type: container
           min-versions-to-keep: 2
