@@ -14,4 +14,4 @@ jobs:
         with:
           package-name: 'alpine-image'
           package-type: 'container'
-          min-versions-to-keep: 10
+          min-versions-to-keep: 2
