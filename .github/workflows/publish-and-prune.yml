@@ -16,3 +16,4 @@ jobs:
           package-name: alpine-image
           package-type: container
           min-versions-to-keep: 2
+          token: ${{ secrets.PACKAGES_PAT }}
