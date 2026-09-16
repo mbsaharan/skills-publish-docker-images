@@ -18,12 +18,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build unique image
-        run: |
-          echo "${{ github.run_number }}" > VERSION
-          echo "FROM alpine:latest
-          LABEL org.opencontainers.image.version=${{ github.run_number }}
-          COPY VERSION /VERSION" | docker build -t ghcr.io/${{ github.repository_owner }}/demo-image:${{ github.run_number }} .
+      - name: Pull Alpine
+        run: docker pull alpine:latest
+
+      - name: Tag image
+        run: docker tag alpine:latest ghcr.io/${{ github.repository_owner }}/demo-image:${{ github.run_number }}
 
       - name: Push image
         run: docker push ghcr.io/${{ github.repository_owner }}/demo-image:${{ github.run_number }}
@@ -31,8 +30,7 @@ jobs:
       - name: Prune old Docker images
         uses: actions/delete-package-versions@v5
         with:
-          package-name: 'demo-image'
-          package-type: 'container'
+          # Must match the package name exactly as shown in GHCR
+          package-name: demo-image
+          package-type: container
           min-versions-to-keep: 2
-          delete-only-untagged-versions: false
-          token: ${{ secrets.GITHUB_TOKEN }}
